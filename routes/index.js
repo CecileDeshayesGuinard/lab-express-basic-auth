@@ -7,6 +7,8 @@ router.get("/", (req, res, next) => {
   res.render("index");
 });
 
+
+/* REGISTRATION */
 router.post("/signup", (req, res, next) => {
   const username = req.body.username;
   //const password = req.body.password
@@ -30,6 +32,23 @@ router.post("/signup", (req, res, next) => {
 router.get("/signup", (req, res, next) => {
   res.render("signup");
 });
+
+/* LOGIN */
+router.post("/login", (req, res, next) => {
+  User.findOne({email:req.body.email})
+  .then(function(userFromDB) {
+    if(!userFromDB) {
+      res.redirect("/")
+    } else {
+      if (bcrypt.compareSync(req.body.password, userFromDB.password) === true)
+      { req.session.userLogged = userFromDB;
+        res.render("login", {userFromDB})
+      }
+    } //else {}
+    })
+  })
+  
+
 
 
 module.exports = router;
