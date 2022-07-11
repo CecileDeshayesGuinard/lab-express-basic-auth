@@ -39,12 +39,26 @@ router.post("/login", (req, res, next) => {
   .then(function(userFromDB) {
     if(!userFromDB) {
       res.redirect("/")
-    } else {
-      if (bcrypt.compareSync(req.body.password, userFromDB.password) === true)
-      { req.session.userLogged = userFromDB;
-        res.render("login", {userFromDB})
+      return
+    }
+
+    if (bcryptJs.compareSync(req.body.password, userFromDB.password))
+      { 
+        console.log("req.session = ",req.session)
+        req.session.userLogged = userFromDB
+        res.redirect("/private-page")
       }
-    } //else {}
+    })
+  })
+
+  router.get("/login-private", (req, res, next) =>{
+    if(!req.session.userLogged) {
+      res.redirect("/login")
+      return
+    }
+
+    res.render("private-page", {
+      user : req.session.userLogged
     })
   })
 
