@@ -8,12 +8,25 @@ require('./db');
 // Handles http requests (express is node js framework)
 // https://www.npmjs.com/package/express
 const express = require('express');
+const session = require('express-session');
+const MongoStore = require('connect-mongo');
 
 // Handles the handlebars
 // https://www.npmjs.com/package/hbs
 const hbs = require('hbs');
 
 const app = express();
+
+app.use(
+    session({
+      secret: process.env.SESSION_SECRET,
+      store: MongoStore.create({
+        mongoUrl: process.env.MONGODB_URI,
+      }),
+      resave: true,
+      saveUninitialized: false // <== false if you don't want to save empty session object to the store
+    })
+  );
 
 // ℹ️ This function is getting exported from the config folder. It runs most middlewares
 require('./config')(app);
